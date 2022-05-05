@@ -1,0 +1,30 @@
+﻿<Window x:Class="FlashCardProgram.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:FlashCardProgram"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="300" Width="500">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="3*"/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="2*"/>
+            <RowDefinition Height="2*"/>
+            <RowDefinition Height="2*"/>
+            <RowDefinition Height="2*"/>
+            <RowDefinition Height="2*"/>
+        </Grid.RowDefinitions>
+        <ListBox Name ="DeckListBox" d:ItemsSource="{d:SampleData ItemCount=5}" Grid.Column="0" Grid.Row="0" Grid.RowSpan="5"/>
+        <Border BorderBrush="Black" BorderThickness="2" Grid.Column="0" Grid.RowSpan="5"/>
+        
+        <Button Name="EditButton" Content="Edit Cards" Grid.Row="0" Grid.Column="1" Click="EditButton_Click" />
+        <Button Name="ViewButton" Content="View Cards" Grid.Row="1" Grid.Column="1" Click="ViewButton_Click"/>
+        <Button Name="NewButton" Content="New Deck" Grid.Row="2" Grid.Column="1" Click="NewButton_Click"/>
+        <Button Name="DeleteButton" Content="Delete Deck" Grid.Row="3" Grid.Column="1" Click="DeleteButton_Click"/>
+        <Button Name="RefreshButton" Content="Refresh List" Grid.Row="4" Grid.Column="1" Click="RefreshButton_Click"/>
+    </Grid>
+</Window>
