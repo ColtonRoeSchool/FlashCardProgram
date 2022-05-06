@@ -1,226 +1,217 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using System.IO;
 using System.Diagnostics;
-
 
 namespace FlashCardProgram
 {
     public partial class EditWindow : Window
     {
-        private Deck deck;
+        private readonly Deck deck;
         private int cardIndex;
-        bool showingBack;
+
+        bool cardSide;
+        private const bool front = false;
+        private const bool back = true;
 
         public EditWindow(string path)
         {
             InitializeComponent();
             cardIndex = 0;
+            cardSide = front;
+
             deck = Deck.readFromFile(path);
-            displayCardFront();
+
+            DisplayCard();
         }
 
         public EditWindow(Deck pDeck)
         {
             InitializeComponent();
             cardIndex = 0;
+            cardSide = front;
+
             deck = pDeck;
-            displayCardFront();
+
+            DisplayCard();
         }
 
-        public void displayCardImage(string path)
+        public void DisplayCardImage(string path)
         {
             // Image is not needed:
-            if (!showingBack && path == "")
+            if (cardSide == front && path == "")
             {
                 // Show no image if there is no path for front
-                cardImage.Source = null;
-                return;
+                CardImage.Source = null;
             }
-            else if (showingBack && path == "")
+            else if (cardSide == back && path == "")
             {
                 // Show the front image if there is no path for back
-                return;
-            }
-
-            // Image is needed:
-            try
-            {
-                cardImage.Source = new BitmapImage(new Uri(Deck.Img_Directory + path));
-            }
-            catch (Exception ex)
-            {
-                // TODO: Create image that informs user image could not be loaded
-                cardImage.Source = null;
-                Console.WriteLine(ex.Message);
-            }
-        }
-
-        public void displayCardFront()
-        {
-            showingBack = false;
-            cardText.Text = deck.get(cardIndex).FrontText;
-            displayCardImage(deck.get(cardIndex).FrontImage);
-
-            showButton.Content = "Edit Back";
-        }
-
-        public void displayCardBack()
-        {
-            showingBack = true;
-            cardText.Text = deck.get(cardIndex).BackText;
-            displayCardImage(deck.get(cardIndex).BackImage);
-
-            showButton.Content = "Edit Front";
-        }
-
-        private void nextButton_Click(object sender, RoutedEventArgs e)
-        {
-            cardIndex++;
-            // Check if index is out of bounds
-            if (cardIndex >= deck.cards.Count) cardIndex = 0;
-            displayCardFront();
-        }
-
-        private void previousButton_Click(object sender, RoutedEventArgs e)
-        {
-            cardIndex--;
-            // Check if index is out of bounds
-            if (cardIndex < 0) cardIndex = deck.cards.Count - 1;
-            displayCardFront();
-        }
-
-        private void showButton_Click(object sender, RoutedEventArgs e)
-        {
-            if (showingBack)
-            {
-                displayCardFront();
+                DisplayCardImage(deck.get(cardIndex).FrontImage);
             }
             else
             {
-                displayCardBack();
+                // Image is needed:
+                try
+                {
+                    CardImage.Source = new BitmapImage(new Uri(Deck.Img_Directory + path));
+                }
+                catch (Exception ex)
+                {
+                    CardImage.Source = new BitmapImage(new Uri(Deck.Img_Directory + "/error.png"));
+                    Console.WriteLine(ex.Message);
+                }
             }
         }
 
-        private void editTextButton_Click(object sender, RoutedEventArgs e)
+        public void DisplayCard()
+        {
+            if (cardSide == front)
+            {
+                cardSide = front;
+                CardText.Text = deck.get(cardIndex).FrontText;
+                DisplayCardImage(deck.get(cardIndex).FrontImage);
+
+                ShowButton.Content = "Edit Back";
+            }
+            else if (cardSide == back)
+            {
+                cardSide = back;
+                CardText.Text = deck.get(cardIndex).BackText;
+                DisplayCardImage(deck.get(cardIndex).BackImage);
+
+                ShowButton.Content = "Edit Front";
+            }
+        }
+
+        private void NextButton_Click(object sender, RoutedEventArgs e)
+        {
+            cardIndex++;
+            cardSide = front;
+            // Check if index is out of bounds
+            if (cardIndex >= deck.cards.Count) cardIndex = 0;
+            DisplayCard();
+        }
+
+        private void PreviousButton_Click(object sender, RoutedEventArgs e)
+        {
+            cardIndex--;
+            cardSide = front;
+            // Check if index is out of bounds
+            if (cardIndex < 0) cardIndex = deck.cards.Count - 1;
+            DisplayCard();
+        }
+
+        private void ShowButton_Click(object sender, RoutedEventArgs e)
+        {
+            cardSide = !cardSide;
+            DisplayCard();
+        }
+
+        private void EditTextButton_Click(object sender, RoutedEventArgs e)
         {
             Card card = deck.get(cardIndex);
 
-            TextDialog textDialog = new TextDialog(cardText.Text);
+            TextDialog textDialog = new(CardText.Text);
             textDialog.ShowDialog();
 
             // Check if cancelled
-            if(textDialog.cancelled)
-            {
-                return;
-            }
-            else
+            if(textDialog.cancelled == false)
             {
                 string result = textDialog.userInput;
                 // Font or back of card
-                if (!showingBack)
+                if (cardSide == front)
                 {
                     card.FrontText = result;
-                    displayCardFront();
+                    DisplayCard();
                 }
-                else if (showingBack)
+                else if (cardSide == back)
                 {
                     card.BackText = result;
-                    displayCardBack();
+                    DisplayCard();
                 }
             }
         }
-        private void editImageButton_Click(object sender, RoutedEventArgs e)
+        private void EditImageButton_Click(object sender, RoutedEventArgs e)
         {
             Card card = deck.get(cardIndex);
 
-            Microsoft.Win32.OpenFileDialog imageDialogue = new Microsoft.Win32.OpenFileDialog();
+            Microsoft.Win32.OpenFileDialog imageDialogue = new();
             imageDialogue.Filter = "Image files(*.png; *.jpeg, *.jpg)| *.png; *.jpeg; *.jpg";
 
             if (imageDialogue.ShowDialog() == true)
             {
                 // Copy the image to the images directory and then use that copy as the image source
-
                 string sourceFile = imageDialogue.FileName;
                 string fileName = System.IO.Path.GetFileName(sourceFile);
                 string targetFile = Deck.Img_Directory + "/" + fileName;
-
                 try
                 {
                     System.IO.File.Copy(sourceFile, targetFile, true);
-                } catch (Exception ex)
+                }
+                catch (Exception ex)
                 {
+                    CardImage.Source = new BitmapImage(new Uri(Deck.Img_Directory + "/error.png"));
                     MessageBox.Show(ex.Message, ex.ToString(), MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
-
-                Debug.WriteLine(imageDialogue.FileName);
                 // Front or back of card
-                if (!showingBack)
+                if (cardSide == front)
                 {
                     card.FrontImage = fileName;
-                    displayCardFront();
+                    DisplayCard();
                 }
-                else if (showingBack)
+                else if (cardSide == back)
                 {
                     card.BackImage = fileName;
-                    displayCardBack();
+                    DisplayCard();
                 }
             }
         }
 
 
-        private void removeImageButton_Click(object sender, RoutedEventArgs e)
+        private void RemoveImageButton_Click(object sender, RoutedEventArgs e)
         {
             Card card = deck.get(cardIndex);
 
-            if (!showingBack)
+            if (cardSide == front)
             {
                 card.FrontImage = "";
-                displayCardFront();
+                DisplayCard();
             }
-            else if (showingBack)
+            else if (cardSide == back)
             {
                 card.BackImage = "";
-                displayCardBack();
+                DisplayCard();
             }
         }
 
-        private void submitButton_Click(object sender, RoutedEventArgs e)
+        private void SubmitButton_Click(object sender, RoutedEventArgs e)
         {
             Deck.saveToFile(deck);
-            MainWindow mainWindow = (MainWindow)Application.Current.MainWindow;
-            mainWindow.populateListBox();
+            ((MainWindow)Application.Current.MainWindow).PopulateListBox();
             this.Close();
         }
 
-        private void newCardButton_Click(object sender, RoutedEventArgs e)
+        private void NewCardButton_Click(object sender, RoutedEventArgs e)
         {
             deck.insert(cardIndex + 1,new Card());
             cardIndex++;
-            displayCardFront();
+            cardSide = front;
+            DisplayCard();
         }
 
-        private void removeCardButton_Click(object sender, RoutedEventArgs e)
+        private void RemoveCardButton_Click(object sender, RoutedEventArgs e)
         {
             if (deck.cards.Count > 1)
             {
                 deck.remove(deck.get(cardIndex));
                 cardIndex--;
+                cardSide = front;
                 // Check if index is out of bounds
                 if (cardIndex < 0) cardIndex = deck.cards.Count - 1;
-                displayCardFront();
+                DisplayCard();
             }
             else
             {
@@ -228,25 +219,18 @@ namespace FlashCardProgram
             }
         }
 
-        private void renameDeckButton_Click(object sender, RoutedEventArgs e)
+        private void RenameDeckButton_Click(object sender, RoutedEventArgs e)
         {
-            Card card = deck.get(cardIndex);
-
-            TextDialog textDialog = new TextDialog(deck.name);
+            TextDialog textDialog = new(deck.name);
             textDialog.ShowDialog();
-
             // Check if cancelled
-            if (textDialog.cancelled)
-            {
-                return;
-            }
-            else
+            if (textDialog.cancelled == false)
             {
                 string result = textDialog.userInput;
                 File.Delete(Deck.Deck_Directory + "/" + deck.name + ".txt");
                 deck.name = result;
                 Deck.saveToFile(deck);
-                ((MainWindow)Application.Current.MainWindow).populateListBox();
+                ((MainWindow)Application.Current.MainWindow).PopulateListBox();
             }
         }
     }
