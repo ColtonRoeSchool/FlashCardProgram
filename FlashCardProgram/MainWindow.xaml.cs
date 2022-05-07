@@ -43,8 +43,11 @@ namespace FlashCardProgram
 
         private void EditButton_Click(object sender, RoutedEventArgs e)
         {
-            EditWindow editWindow = new(Deck.Deck_Directory + "/" + DeckListBox.SelectedItem.ToString() + ".txt");
-            editWindow.Show();
+            if (DeckListBox.SelectedItem != null)
+            {
+                EditWindow editWindow = new(Deck.Deck_Directory + "/" + DeckListBox.SelectedItem.ToString() + ".txt");
+                editWindow.Show();
+            }
         }
 
         private void RefreshButton_Click(object sender, RoutedEventArgs e)

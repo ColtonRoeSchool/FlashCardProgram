@@ -6,6 +6,7 @@
         xmlns:local="clr-namespace:FlashCardProgram"
         mc:Ignorable="d"
         Title="Card Viewer" Height="450" Width="320">
+    
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="4*" />

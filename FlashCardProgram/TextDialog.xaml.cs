@@ -5,7 +5,6 @@ namespace FlashCardProgram
 {
     public partial class TextDialog : Window
     {
-
         public string userInput;
         public bool cancelled;
 
@@ -16,12 +15,13 @@ namespace FlashCardProgram
             cancelled = true;
         }
 
-        public TextDialog(string oldText) : this()
+        public TextDialog(string text) : this()
         {
-            textBox.Text = oldText;
+            textBox.Text = text;
+            textLabel.Content = "Text:";
         }
 
-        public TextDialog(string oldText, string prompt) : this(oldText)
+        public TextDialog(string text, string prompt) : this(text)
         {
             textLabel.Content = prompt;
         }
