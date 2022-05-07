@@ -14,6 +14,11 @@ namespace FlashCardProgram
         {
             InitializeComponent();
             Application.Current.MainWindow = this;
+
+            // Check that the needed directories exist
+            Directory.CreateDirectory(Deck.Deck_Directory);
+            Directory.CreateDirectory(Deck.Img_Directory);
+
             PopulateListBox();
         }
 
