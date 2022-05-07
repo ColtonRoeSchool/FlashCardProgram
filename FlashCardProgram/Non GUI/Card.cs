@@ -21,6 +21,7 @@ namespace FlashCardProgram
             FrontImage = "";
             BackImage = "";
         }
+
         public Card(string pFrontText, string pBackText)
         {
             FrontText = pFrontText;

@@ -5,9 +5,6 @@ using System.IO;
 
 namespace FlashCardProgram
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
         public MainWindow()
@@ -65,12 +62,17 @@ namespace FlashCardProgram
                 // Check if there is already a deck with the same name
                 if(DeckListBox.Items.Contains(textDialog.userInput))
                 {
-                    MessageBox.Show("There is already a deck with than name", "Cannot create a deck with than name", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBox.Show(
+                        "There is already a deck with than name",
+                        "Cannot create a deck with than name",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Warning
+                    );
                 }
                 else
                 {
                     Deck newDeck = new(textDialog.userInput);
-                    newDeck.add(new Card("Front", "Back"));
+                    newDeck.Add(new Card("Front", "Back"));
 
                     EditWindow editWindow = new(newDeck);
                     editWindow.Show();

@@ -2,7 +2,6 @@
 using System.Windows;
 using System.Windows.Media.Imaging;
 using System.IO;
-using System.Diagnostics;
 
 namespace FlashCardProgram
 {
@@ -11,9 +10,9 @@ namespace FlashCardProgram
         private readonly Deck deck;
         private int cardIndex;
 
-        bool cardSide;
+        private bool cardSide;
         private const bool front = false;
-        private const bool back = true;
+        private const bool back  = true;
 
         public EditWindow(string path)
         {
@@ -21,7 +20,7 @@ namespace FlashCardProgram
             cardIndex = 0;
             cardSide = front;
 
-            deck = Deck.readFromFile(path);
+            deck = Deck.ReadFromFile(path);
 
             DisplayCard();
         }
@@ -48,7 +47,7 @@ namespace FlashCardProgram
             else if (cardSide == back && path == "")
             {
                 // Show the front image if there is no path for back
-                DisplayCardImage(deck.get(cardIndex).FrontImage);
+                DisplayCardImage(deck.Get(cardIndex).FrontImage);
             }
             else
             {
@@ -70,16 +69,16 @@ namespace FlashCardProgram
             if (cardSide == front)
             {
                 cardSide = front;
-                CardText.Text = deck.get(cardIndex).FrontText;
-                DisplayCardImage(deck.get(cardIndex).FrontImage);
+                CardText.Text = deck.Get(cardIndex).FrontText;
+                DisplayCardImage(deck.Get(cardIndex).FrontImage);
 
                 ShowButton.Content = "Edit Back";
             }
             else if (cardSide == back)
             {
                 cardSide = back;
-                CardText.Text = deck.get(cardIndex).BackText;
-                DisplayCardImage(deck.get(cardIndex).BackImage);
+                CardText.Text = deck.Get(cardIndex).BackText;
+                DisplayCardImage(deck.Get(cardIndex).BackImage);
 
                 ShowButton.Content = "Edit Front";
             }
@@ -111,7 +110,7 @@ namespace FlashCardProgram
 
         private void EditTextButton_Click(object sender, RoutedEventArgs e)
         {
-            Card card = deck.get(cardIndex);
+            Card card = deck.Get(cardIndex);
 
             TextDialog textDialog = new(CardText.Text);
             textDialog.ShowDialog();
@@ -135,7 +134,7 @@ namespace FlashCardProgram
         }
         private void EditImageButton_Click(object sender, RoutedEventArgs e)
         {
-            Card card = deck.get(cardIndex);
+            Card card = deck.Get(cardIndex);
 
             Microsoft.Win32.OpenFileDialog imageDialogue = new();
             imageDialogue.Filter = "Image files(*.png; *.jpeg, *.jpg)| *.png; *.jpeg; *.jpg";
@@ -173,7 +172,7 @@ namespace FlashCardProgram
 
         private void RemoveImageButton_Click(object sender, RoutedEventArgs e)
         {
-            Card card = deck.get(cardIndex);
+            Card card = deck.Get(cardIndex);
 
             if (cardSide == front)
             {
@@ -189,14 +188,14 @@ namespace FlashCardProgram
 
         private void SubmitButton_Click(object sender, RoutedEventArgs e)
         {
-            Deck.saveToFile(deck);
+            Deck.SaveToFile(deck);
             ((MainWindow)Application.Current.MainWindow).PopulateListBox();
             this.Close();
         }
 
         private void NewCardButton_Click(object sender, RoutedEventArgs e)
         {
-            deck.insert(cardIndex + 1,new Card());
+            deck.Insert(cardIndex + 1,new Card());
             cardIndex++;
             cardSide = front;
             DisplayCard();
@@ -206,7 +205,7 @@ namespace FlashCardProgram
         {
             if (deck.cards.Count > 1)
             {
-                deck.remove(deck.get(cardIndex));
+                deck.Remove(deck.Get(cardIndex));
                 cardIndex--;
                 cardSide = front;
                 // Check if index is out of bounds
@@ -229,7 +228,7 @@ namespace FlashCardProgram
                 string result = textDialog.userInput;
                 File.Delete(Deck.Deck_Directory + "/" + deck.name + ".txt");
                 deck.name = result;
-                Deck.saveToFile(deck);
+                Deck.SaveToFile(deck);
                 ((MainWindow)Application.Current.MainWindow).PopulateListBox();
             }
         }

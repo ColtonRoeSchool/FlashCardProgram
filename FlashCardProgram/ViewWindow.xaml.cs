@@ -10,7 +10,7 @@ namespace FlashCardProgram
         private readonly Deck deck;
         private int cardIndex;
 
-        bool cardSide;
+        private bool cardSide;
         private const bool front = false;
         private const bool back = true;
 
@@ -19,7 +19,7 @@ namespace FlashCardProgram
             InitializeComponent();
             cardIndex = 0;
             cardSide = front;
-            deck = Deck.readFromFile(path);
+            deck = Deck.ReadFromFile(path);
             DisplayCard();
         }
 
@@ -55,16 +55,16 @@ namespace FlashCardProgram
             if (cardSide == front)
             {
                 cardSide = front;
-                CardText.Text = deck.get(cardIndex).FrontText;
-                DisplayCardImage(deck.get(cardIndex).FrontImage);
+                CardText.Text = deck.Get(cardIndex).FrontText;
+                DisplayCardImage(deck.Get(cardIndex).FrontImage);
 
                 ShowButton.Content = "Show Back";
             }
             else if (cardSide == back)
             {
                 cardSide = back;
-                CardText.Text = deck.get(cardIndex).BackText;
-                DisplayCardImage(deck.get(cardIndex).BackImage);
+                CardText.Text = deck.Get(cardIndex).BackText;
+                DisplayCardImage(deck.Get(cardIndex).BackImage);
 
                 ShowButton.Content = "Show Front";
             }
