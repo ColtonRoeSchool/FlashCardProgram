@@ -151,8 +151,8 @@ namespace FlashCardProgram
                 }
                 catch (Exception ex)
                 {
-                    CardImage.Source = new BitmapImage(new Uri(Deck.Img_Directory + "/error.png"));
                     MessageBox.Show(ex.Message, ex.ToString(), MessageBoxButton.OK, MessageBoxImage.Error);
+                    CardImage.Source = new BitmapImage(new Uri(Deck.Img_Directory + "/error.png"));
                     return;
                 }
                 // Front or back of card
