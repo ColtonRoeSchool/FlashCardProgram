@@ -84,7 +84,18 @@ namespace FlashCardProgram
         {
             if (DeckListBox.SelectedItem != null)
             {
-                File.Delete(Deck.Deck_Directory + "/" + DeckListBox.SelectedItem.ToString() + ".txt");
+                string messageBoxText = "Are you sure you want to permanantly delete this deck?";
+                string caption = "Delete Deck";
+                MessageBoxButton button = MessageBoxButton.YesNo;
+                MessageBoxImage icon = MessageBoxImage.Warning;
+                MessageBoxResult result;
+
+                result = MessageBox.Show(messageBoxText, caption, button, icon, MessageBoxResult.Yes);
+
+                if(result == MessageBoxResult.Yes)
+                {
+                    File.Delete(Deck.Deck_Directory + "/" + DeckListBox.SelectedItem.ToString() + ".txt");
+                }
             }
             PopulateListBox();
         }
