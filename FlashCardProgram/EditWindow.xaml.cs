@@ -2,6 +2,7 @@
 using System.Windows;
 using System.Windows.Media.Imaging;
 using System.IO;
+using System.Diagnostics;
 
 namespace FlashCardProgram
 {
@@ -36,25 +37,33 @@ namespace FlashCardProgram
             DisplayCard();
         }
 
-        public void DisplayCardImage(string path)
+        public void DisplayCardImage(string image)
         {
             // Image is not needed:
-            if (cardSide == front && path == "")
+            if (cardSide == front && image == "")
             {
                 // Show no image if there is no path for front
                 CardImage.Source = null;
             }
-            else if (cardSide == back && path == "")
+            else if (cardSide == back && image == "")
             {
                 // Show the front image if there is no path for back
-                DisplayCardImage(deck.Get(cardIndex).FrontImage);
+                string frontImage = deck.Get(cardIndex).FrontImage;
+                if (frontImage != "")
+                {
+                    DisplayCardImage(frontImage);
+                }
+                else
+                {
+                    CardImage.Source = null;
+                }
             }
             else
             {
                 // Image is needed:
                 try
                 {
-                    CardImage.Source = new BitmapImage(new Uri(Deck.Img_Directory + path));
+                    CardImage.Source = new BitmapImage(new Uri(Deck.Img_Directory + image));
                 }
                 catch (Exception ex)
                 {
@@ -76,6 +85,7 @@ namespace FlashCardProgram
             }
             else if (cardSide == back)
             {
+                Debug.WriteLine(cardIndex);   
                 cardSide = back;
                 CardText.Text = deck.Get(cardIndex).BackText;
                 DisplayCardImage(deck.Get(cardIndex).BackImage);
